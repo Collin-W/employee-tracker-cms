@@ -1,57 +1,55 @@
-//const fs = require('fs');
 const inquirer = require('inquirer');
 const connection = require('./db/connection')
-//const { addData } = require('./db/querys')
 const cTable = require('console.table');
 
 const cmsPrompts = [{
   type: 'list',
   name: 'start_actions',
   message: 'Which of the following actions would you like to take?',
-  choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee role']
+  choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee role', 'exit']
 }]
 
-const addDepartment = [{
+const addDepartments = [{
   type: 'input',
-  name: 'nameDepartment',
+  name: 'name',
   Message: 'Enter new department name.'
 }]
 
-const addRole = [{
+const addRoles = [{
     type: 'input',
-    name: 'titleRole',
+    name: 'title',
     Message: 'Enter title of role.'
   },
   {
     type: 'input',
-    name: 'salaryRole',
+    name: 'salary',
     Message: 'Enter yearly salary of role.'
   },
   {
     type: 'input',
-    name: 'departmentRole',
+    name: 'department_id',
     Message: 'Enter department id for role.'
   }
 ]
 
-const addEmployee = [{
+const addEmployees = [{
     type: 'input',
-    name: 'firstNameEmployee',
+    name: 'first_name',
     Message: 'Enter employee first name.'
   },
   {
     type: 'input',
-    name: 'lastNameEmployee',
+    name: 'last_name',
     Message: 'Enter employee last name.'
   },
   {
     type: 'input',
-    name: 'roleEmployee',
+    name: 'role_id',
     Message: 'Enter employees role.'
   },
   {
     type: 'input',
-    name: 'manageEmployee',
+    name: 'manager_id',
     Message: 'Enter employee manager.'
   }
 ]
@@ -61,22 +59,23 @@ function init() {
     .then(data => {
 
       if (data.start_actions === 'view all departments') viewDepartments();
-      if (data.start_actions === 'view all roles') viewRoles() ;
+      if (data.start_actions === 'view all roles') viewRoles();
       if (data.start_actions === 'view all employees') viewEmployees();
-      // if (data.start_actions === 'add a department') addDepartment() ;
-      // if (data.start_actions === 'add a role') addRole() ;
-      // if (data.start_actions === 'add an employee') addEmployee();
-     // if (data.start_actions === 'update an employee role') ;
+      if (data.start_actions === 'add a department') addDepartment() ;
+      if (data.start_actions === 'add a role') addRole() ;
+      if (data.start_actions === 'add an employee') addEmployee();
+      if (data.start_actions === 'update an employee role') ;
+      if (data.start_actions === 'exit') exit();
     })
 };
 
 function viewDepartments() {
-  connection.query("SELECT * FROM department", function (err, res) {
-    if (err) throw err;
-    console.table(res);
-    init();
-    connection.end();
-  })
+  connection.promise().query("SELECT * FROM department").then(function ([data]) {
+      console.table(data);
+    })
+    .then(() => {
+      init()
+    })
 };
 
 function viewRoles() {
@@ -84,7 +83,6 @@ function viewRoles() {
     if (err) throw err;
     console.table(res);
     init();
-    connection.end();
   })
 };
 
@@ -93,94 +91,55 @@ function viewEmployees() {
     if (err) throw err;
     console.table(res);
     init();
-    connection.end();
   })
 };
 
-// function addDepartment() {
+function addDepartment() {
 
-// };
+  inquirer.prompt(addDepartments)
+  .then(body => {
+    connection.promise().query("INSERT INTO department SET ?", body)
+    .then(function ([body]) {
+      console.table(body);
+    })
+    .then(() => {
+      init()
+    })
+  })
 
-// function addRole() {
+};
 
-// };
+function addRole() {
 
-// function addEmployee() {
+  inquirer.prompt(addRoles)
+  .then(body => {
+    connection.promise().query("INSERT INTO roles SET ?", body)
+    .then(function ([body]) {
+      console.table(body);
+    })
+    .then(() => {
+      init()
+    })
+  })
+};
 
-//   const sql = `INSERT INTO employee ('first_name', 'last_name', 'role_id', 'manager_id') VALUES(?,?,?,?)`;
-//   const params = [body.first_name, body.last_name, body.role_id, body.manager_id];
+function addEmployee() {
 
-//   db.query(sql, params, (err, row) => {
-//     if (err) {
-//       res.status(400).json({
-//         error: err.message
-//       });
-//       return;
-//     }
-//     res.json({
-//       message: 'success',
-//       data: row
-//     });
-//   });
-//   init()
-// };
+  inquirer.prompt(addEmployees)
+    .then(body => {
+    
+      connection.promise().query("INSERT INTO employee SET ?", body)
+      .then(function ([body]) {
+          console.table(body);
+        })
+        .then(() => {
+          init()
+        })
+    })
+};
 
-
-// var query = connection.query(
-//     "INSERT INTO employee SET ?",
-//     {
-//       first_name: "John",
-//       last_name: "Doe",
-//       role_id: 50,
-//       manager_id: 3
-//     },
-//     function(err, res) {
-//       if (err) throw err;
-//     }
-//   );
-//   console.log(query.sql);
-
-
-
-
-
-
-
-
-
+function exit(){
+  connection.end();
+}
 
 init();
-
-
-
-
-
-
-// switch(expression) {
-//     case x: 
-//       // code block
-//       break;
-//     case y:
-//       // code block
-//       break;
-//     default:
-//       // code block
-//   }
-
-// test
-// const cTable = require('console.table');
-// console.table([
-//   {
-//     name: 'foo',
-//     age: 10
-//   }, {
-//     name: 'bar',
-//     age: 20
-//   }
-// ]);
-
-// prints
-// name  age
-// ----  ---
-// foo   10
-// bar   20

@@ -54,6 +54,18 @@ const addEmployees = [{
   }
 ]
 
+const updateEmployeeRoles = [{
+
+  type: 'input',
+  name: 'first_name',
+  message: 'Enter first name of employee you want to updates role.'
+},
+{
+  type: 'input',
+  name: 'role_id',
+  message: 'Enter new employee role id.'
+}]
+
 function init() {
   inquirer.prompt(cmsPrompts)
     .then(data => {
@@ -64,7 +76,7 @@ function init() {
       if (data.start_actions === 'add a department') addDepartment() ;
       if (data.start_actions === 'add a role') addRole() ;
       if (data.start_actions === 'add an employee') addEmployee();
-      if (data.start_actions === 'update an employee role') ;
+      if (data.start_actions === 'update an employee role') updateEmployeeRole();
       if (data.start_actions === 'exit') exit();
     })
 };
@@ -137,6 +149,27 @@ function addEmployee() {
         })
     })
 };
+
+function updateEmployeeRole() {
+  inquirer.prompt(updateEmployeeRoles)
+  .then(body => {
+
+    connection.promise().query(`UPDATE employee SET role_id = ? WHERE first_name = ?`, [body.role_id, body.first_name])
+    .then(function ([body]) {
+      console.table(body);
+    })
+    .then(() => {
+      init()
+    })
+  })
+
+}
+
+function deleteEmployee() {
+
+}
+
+
 
 function exit(){
   connection.end();

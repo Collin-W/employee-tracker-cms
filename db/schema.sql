@@ -1,20 +1,26 @@
+
+
+
+
+
+DROP DATABASE IF EXISTS cms;
+CREATE DATABASE cms;
+USE cms;
+
 DROP TABLE IF EXISTS department;
-DROP TABLE IF EXISTS role;
+DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS employee;
 
-
-
-
-CREATE TABLE department 
+CREATE TABLE department (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(50) NOT NULL,
+  name VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE roles (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(30) NOT NULL,
   salary DECIMAL,
-  department_id INTEGER,
+  department_id INTEGER
 );
 
 CREATE TABLE employee (

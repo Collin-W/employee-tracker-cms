@@ -10,9 +10,10 @@
   
     To use the application enter node index.js into the command line to be prompted.
 
-  ## Link: 
+  ## Video Demo Link: 
   
-    https://collin-w.github.io/employee-tracker-cms/
+    https://watch.screencastify.com/v/2yh4CHdxmzSiutbh8LWw
+
 
   ## Features:
   

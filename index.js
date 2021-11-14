@@ -1,12 +1,11 @@
 const inquirer = require('inquirer');
 const connection = require('./db/connection')
-const cTable = require('console.table');
 
 const cmsPrompts = [{
   type: 'list',
   name: 'start_actions',
   message: 'Which of the following actions would you like to take?',
-  choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee role', 'exit']
+  choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee role', 'delete an employee', 'exit']
 }]
 
 const addDepartments = [{
@@ -66,6 +65,12 @@ const updateEmployeeRoles = [{
   message: 'Enter new employee role id.'
 }]
 
+const deleteEmployees = [{
+  type: 'input',
+  name: 'first_name',
+  message: 'Enter first name of employee you want to delete.'
+}]
+
 function init() {
   inquirer.prompt(cmsPrompts)
     .then(data => {
@@ -77,6 +82,7 @@ function init() {
       if (data.start_actions === 'add a role') addRole() ;
       if (data.start_actions === 'add an employee') addEmployee();
       if (data.start_actions === 'update an employee role') updateEmployeeRole();
+      if (data.start_actions === 'delete an employee') deleteEmployee();
       if (data.start_actions === 'exit') exit();
     })
 };
@@ -162,14 +168,21 @@ function updateEmployeeRole() {
       init()
     })
   })
-
 }
 
 function deleteEmployee() {
+  inquirer.prompt(deleteEmployees)
+  .then(body => {
 
+    connection.promise().query(`DELETE FROM employee WHERE first_name = ?`, [body.first_name])
+    .then(function ([body]) {
+      console.table(body);
+    })
+    .then(() => {
+      init()
+    })
+  })
 }
-
-
 
 function exit(){
   connection.end();

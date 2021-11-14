@@ -5,7 +5,7 @@ const cmsPrompts = [{
   type: 'list',
   name: 'start_actions',
   message: 'Which of the following actions would you like to take?',
-  choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee role', 'delete an employee', 'exit']
+  choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee role', 'delete an employee', 'delete a department', 'delete a role', 'exit']
 }]
 
 const addDepartments = [{
@@ -71,6 +71,18 @@ const deleteEmployees = [{
   message: 'Enter first name of employee you want to delete.'
 }]
 
+const deleteDepartments = [{
+  type: 'input',
+  name: 'name',
+  message: 'Enter the name of the department you want to delete.'
+}]
+
+const deleteRoles = [{
+  type: 'input',
+  name: 'title',
+  message: 'Enter the title of the role you want to delete.'
+}]
+
 function init() {
   inquirer.prompt(cmsPrompts)
     .then(data => {
@@ -83,6 +95,8 @@ function init() {
       if (data.start_actions === 'add an employee') addEmployee();
       if (data.start_actions === 'update an employee role') updateEmployeeRole();
       if (data.start_actions === 'delete an employee') deleteEmployee();
+      if (data.start_actions === 'delete a department') deleteDepartment();
+      if (data.start_actions === 'delete a role') deleteRole()
       if (data.start_actions === 'exit') exit();
     })
 };
@@ -175,6 +189,34 @@ function deleteEmployee() {
   .then(body => {
 
     connection.promise().query(`DELETE FROM employee WHERE first_name = ?`, [body.first_name])
+    .then(function ([body]) {
+      console.table(body);
+    })
+    .then(() => {
+      init()
+    })
+  })
+}
+
+function deleteDepartment() {
+  inquirer.prompt(deleteDepartments)
+  .then(body => {
+
+    connection.promise().query(`DELETE FROM department WHERE name = ?`, [body.name])
+    .then(function ([body]) {
+      console.table(body);
+    })
+    .then(() => {
+      init()
+    })
+  })
+}
+
+function deleteRole() {
+  inquirer.prompt(deleteRoles)
+  .then(body => {
+
+    connection.promise().query(`DELETE FROM roles WHERE title = ?`, [body.title])
     .then(function ([body]) {
       console.table(body);
     })
